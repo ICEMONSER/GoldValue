@@ -94,7 +94,7 @@
             display: none;
         }
         .result-item {
-            margin: 8px 0;
+            margin: 10px 0;
             font-size: 16px;
             color: #444;
         }
@@ -102,9 +102,20 @@
             color: #d4af37;
             font-weight: 600;
         }
+        .profit-highlight {
+            color: #2e7d32;
+            font-weight: 600;
+        }
         .total-price-section {
-            font-size: 22px;
+            font-size: 18px;
             border-top: 1px dashed #d4af37;
+            padding-top: 10px;
+            margin-top: 12px;
+            display: none;
+        }
+        .profit-section {
+            font-size: 18px;
+            border-top: 1px dashed #2e7d32;
             padding-top: 10px;
             margin-top: 12px;
             display: none;
@@ -115,7 +126,7 @@
 
 <div class="container">
     <h2>ระบบคำนวณราคาทองคำ</h2>
-    <p class="subtitle">คำนวณราคาท่อกรัม และคำนวณราคารวม (ระบุหรือไม่ระบุน้ำหนักก็ได้)</p>
+    <p class="subtitle">คำนวณราคาท่อกรัม วิเคราะห์ต้นทุนและราคารวม</p>
     
     <div class="form-group">
         <label for="goldBars">1. ราคาซื้อทองแท่งปัจจุบัน (บาท):</label>
@@ -124,23 +135,31 @@
     
     <div class="form-group">
         <label for="percentGold">2. ความบริสุทธิ์ของทอง (%):</label>
-        <input type="number" id="percentGold" placeholder="ตัวอย่าง: 96.5" step="0.01" required>
+        <input type="number" id="percentGold" placeholder="ตัวอย่าง: 75" step="0.01" required>
     </div>
 
     <div class="form-group">
         <label for="goldWeight">3. น้ำหนักทอง (กรัม) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
         <input type="number" id="goldWeight" placeholder="ตัวอย่าง: 15.2 (ปล่อยว่างไว้ได้)" step="0.0001">
     </div>
+
+    <div class="form-group">
+        <label for="myBuyPrice">4. ราคาที่คุณซื้อทองชิ้นนี้มา (บาท) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
+        <input type="number" id="myBuyPrice" placeholder="ตัวอย่าง: 25000 (ปล่อยว่างไว้ได้)">
+    </div>
     
     <button onclick="calculateGold()">คำนวณราคาทอง</button>
     
     <div class="result-box" id="resultBox">
         <div class="result-item" id="infoText"></div>
-        <div class="result-item" style="margin-top: 10px;">ราคาทองคำต่อกรัมของคุณ: <span class="highlight" id="pricePerGram">0</span> บาท</div>
+        <div class="result-item" style="margin-top: 12px;">ราคาทองคำต่อกรัมวันนี้: <span class="highlight" id="pricePerGram">0</span> บาท</div>
         
         <div class="result-item total-price-section" id="totalPriceSection">
-            ราคารวมของทองน้ำหนัก <span id="viewWeight">0</span> กรัม คือ:<br>
-            <span class="highlight" style="font-size: 26px;" id="totalPrice">0</span> บาท
+            ราคารวมของทองน้ำหนัก <span id="viewWeight">0</span> กรัม คือ: <span class="highlight" id="totalPrice">0</span> บาท
+        </div>
+
+        <div class="result-item profit-section" id="profitSection">
+            ทองชิ้นนี้ต้องมีน้ำหนักเกิน: <span class="profit-highlight" id="minWeightForProfit">0</span> กรัม ถึงจะเริ่มได้กำไร
         </div>
     </div>
 </div>
@@ -150,6 +169,7 @@
         const valueOfGoldbars = parseFloat(document.getElementById('goldBars').value);
         const percentOfGold = parseFloat(document.getElementById('percentGold').value);
         const goldWeightInput = document.getElementById('goldWeight').value;
+        const myBuyPriceInput = document.getElementById('myBuyPrice').value;
         
         if (isNaN(valueOfGoldbars) || isNaN(percentOfGold)) {
             alert('กรุณากรอกราคาซื้อทองแท่งและความบริสุทธิ์ให้ครบถ้วนครับ');
@@ -170,6 +190,16 @@
             document.getElementById('totalPriceSection').style.display = 'block';
         } else {
             document.getElementById('totalPriceSection').style.display = 'none';
+        }
+        
+        if (myBuyPriceInput !== "" && !isNaN(parseFloat(myBuyPriceInput)) && parseFloat(myBuyPriceInput) > 0) {
+            const myBuyPrice = parseFloat(myBuyPriceInput);
+            const minWeight = myBuyPrice / pricePerGram;
+            
+            document.getElementById('minWeightForProfit').innerText = minWeight.toFixed(4);
+            document.getElementById('profitSection').style.display = 'block';
+        } else {
+            document.getElementById('profitSection').style.display = 'none';
         }
             
         document.getElementById('resultBox').style.display = 'block';
