@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link rel="icon" type="Image" href="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png">
     <style>
         * {
             box-sizing: border-box;
@@ -31,10 +31,198 @@
             width: 100%;
             border-top: 8px solid #d4af37;
         }
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #d4af37;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
         h2 {
             text-align: center;
             color: #333;
-            margin-bottom: 5px;
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 400;
+        }
+        .optional-label {
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus {
+            border-color: #d4af37;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #aa8c2c;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 18px;
+            background-color: #fbf8eb;
+            border-left: 5px solid #d4af37;
+            border-radius: 4px;
+            display: none;
+        }
+        .result-item {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #444;
+        }
+        .highlight {
+            color: #d4af37;
+            font-weight: 600;
+        }
+        .profit-highlight {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        .total-price-section {
+            font-size: 18px;
+            border-top: 1px dashed #d4af37;
+            padding-top: 10px;
+            margin-top: 12px;
+            display: none;
+        }
+        .profit-section {
+            font-size: 18px;
+            border-top: 1px dashed #2e7d32;
+            padding-top: 10px;
+            margin-top: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-wrapper">
+        <img src="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png" alt="Logo" class="logo-img">
+    </div>
+    <h2>ระบบคำนวณราคาทองคำ</h2>
+    <p class="subtitle">คำนวณราคาท่อกรัม วิเคราะห์ต้นทุนและราคารวม</p>
+    
+    <div class="form-group">
+        <label for="goldBars">1. ราคาซื้อทองแท่งปัจจุบัน (บาท):</label>
+        <input type="number" id="goldBars" placeholder="ตัวอย่าง: 44000" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="percentGold">2. ความบริสุทธิ์ของทอง (%):</label>
+        <input type="number" id="percentGold" placeholder="ตัวอย่าง: 75" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label for="goldWeight">3. น้ำหนักทอง (กรัม) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
+        <input type="number" id="goldWeight" placeholder="ตัวอย่าง: 15.2 (ปล่อยว่างไว้ได้)" step="0.0001">
+    </div>
+
+    <div class="form-group">
+        <label for="myBuyPrice">4. ราคาที่คุณซื้อทองชิ้นนี้มา (บาท) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
+        <input type="number" id="myBuyPrice" placeholder="ตัวอย่าง: 25000 (ปล่อยว่างไว้ได้)">
+    </div>
+    
+    <button onclick="calculateGold()">คำนวณราคาทอง</button>
+    
+    <div class="result-box" id="resultBox">
+        <div class="result-item" id="infoText"></div>
+        <div class="result-item" style="margin-top: 12px;">ราคาทองคำต่อกรัมวันนี้: <span class="highlight" id="pricePerGram">0</span> บาท</div>
+        
+        <div class="result-item total-price-section" id="totalPriceSection">
+            ราคารวมของทองน้ำหนัก <span id="viewWeight">0</span> กรัม คือ: <span class="highlight" id="totalPrice">0</span> บาท
+        </div>
+
+        <div class="result-item profit-section" id="profitSection">
+            ทองชิ้นนี้ต้องมีน้ำหนักเกิน: <span class="profit-highlight" id="minWeightForProfit">0</span> กรัม ถึงจะเริ่มได้กำไร
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateGold() {
+        const valueOfGoldbars = parseFloat(document.getElementById('goldBars').value);
+        const percentOfGold = parseFloat(document.getElementById('percentGold').value);
+        const goldWeightInput = document.getElementById('goldWeight').value;
+        const myBuyPriceInput = document.getElementById('myBuyPrice').value;
+        
+        if (isNaN(valueOfGoldbars) || isNaN(percentOfGold)) {
+            alert('กรุณากรอกราคาซื้อทองแท่งและความบริสุทธิ์ให้ครบถ้วนครับ');
+            return;
+        }
+        
+        const pricePerGram = ((valueOfGoldbars - 200) / 15.2) * (percentOfGold / 100);
+        
+        document.getElementById('infoText').innerHTML = `✨ บันทึกข้อมูลเรียบร้อย! ทองคำบริสุทธิ์ <b>${percentOfGold}%</b>`;
+        document.getElementById('pricePerGram').innerText = pricePerGram.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+        if (goldWeightInput !== "" && !isNaN(parseFloat(goldWeightInput)) && parseFloat(goldWeightInput) > 0) {
+            const goldWeight = parseFloat(goldWeightInput);
+            const totalPrice = pricePerGram * goldWeight;
+            
+            document.getElementById('viewWeight').innerText = goldWeight;
+            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            document.getElementById('totalPriceSection').style.display = 'block';
+        } else {
+            document.getElementById('totalPriceSection').style.display = 'none';
+        }
+        
+        if (myBuyPriceInput !== "" && !isNaN(parseFloat(myBuyPriceInput)) && parseFloat(myBuyPriceInput) > 0) {
+            const myBuyPrice = parseFloat(myBuyPriceInput);
+            const minWeight = myBuyPrice / pricePerGram;
+            
+            document.getElementById('minWeightForProfit').innerText = minWeight.toFixed(4);
+            document.getElementById('profitSection').style.display = 'block';
+        } else {
+            document.getElementById('profitSection').style.display = 'none';
+        }
+            
+        document.getElementById('resultBox').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>            margin-bottom: 5px;
             font-size: 24px;
         }
         .subtitle {
