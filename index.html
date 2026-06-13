@@ -14,10 +14,9 @@
     <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png">
    
+    
     <meta name="apple-mobile-web-app-title" content="คำนวณราคาทอง">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     
     <style>
         * {
@@ -32,61 +31,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            position: relative;
         }
-
-        /* สไตล์สำหรับกล่องนับยอดออนไลน์มุมขวาบน */
-        .live-counter-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #ffffff;
-            padding: 8px 14px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #4a5568;
-            z-index: 999;
-        }
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #2ec771;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 0 rgba(46, 199, 113, 0.7);
-            animation: pulse 1.6s infinite;
-        }
-        @keyframes pulse {
-            0% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(46, 199, 113, 0.7);
-            }
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 6px rgba(46, 199, 113, 0);
-            }
-            100% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(46, 199, 113, 0);
-            }
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding-top: 70px;
-            }
-            .live-counter-badge {
-                top: 15px;
-                right: 15px;
-            }
-        }
-
         .container {
             background-color: #ffffff;
             padding: 30px;
@@ -234,11 +179,6 @@
 </head>
 <body>
 
-<div class="live-counter-badge">
-    <span class="pulse-dot"></span>
-    <span>มีผู้ใช้งานเว็บไซต์ตอนนี้อยู่: <span id="online-count" style="color: #2ec771;">1</span> คน</span>
-</div>
-
 <div class="container">
     <div class="logo-wrapper">
         <img src="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png" alt="Logo" class="logo-img">
@@ -307,17 +247,6 @@
 </div>
 
 <script>
-    // ⚠️ เปลี่ยนลิงก์ด้านล่างนี้ให้เป็นลิงก์จริงที่คุณสร้างจากหน้าเว็บ Render.com นะครับ
-    const BACKEND_URL = "https://goldvalue-backend.onrender.com"; 
-    
-    // ยิงเชื่อมต่อตรง ๆ ไปที่หลังบ้าน
-    const socket = io(BACKEND_URL);
-
-    // รับสัญญาณนับแท็บแบบ Real-time
-    socket.on('userCount', (count) => {
-        document.getElementById('online-count').innerText = count;
-    });
-
     function calculateGold() {
         const valueOfGoldbars = parseFloat(document.getElementById('goldBars').value);
         const percentOfGold = parseFloat(document.getElementById('percentGold').value);
@@ -358,6 +287,7 @@
         document.getElementById('resultBox').style.display = 'block';
     }
 
+    // ฟังก์ชันข้อ 5: แปลงค่าทอง K เป็นเปอร์เซ็นต์
     function convertKToPercent() {
         const kValueInput = document.getElementById('goldKValue').value;
         const kValue = parseFloat(kValueInput);
@@ -372,11 +302,13 @@
         document.getElementById('viewKValue').innerText = kValue;
         document.getElementById('calculatedPercent').innerText = computedPercent.toFixed(2);
         
+        // ช่วยผู้ใช้พิมพ์อัตโนมัติ: ส่งค่าที่คำนวณได้ไปที่ช่องเลข 2
         document.getElementById('percentGold').value = computedPercent.toFixed(2);
         
         document.getElementById('kResultBox').style.display = 'block';
     }
 
+    // ฟังก์ชันข้อ 6: แปลงเปอร์เซ็นต์ เป็นค่าทอง K
     function convertPercentToK() {
         const percentInput = document.getElementById('goldPercentValue').value;
         const percentValue = parseFloat(percentInput);
@@ -386,318 +318,14 @@
             return;
         }
 
+        // ใช้สูตร (เปอร์เซ็นต์ที่สนใจ / 100) * 24
         const computedK = (percentValue / 100) * 24;
 
         document.getElementById('viewPercentValue').innerText = percentValue;
+        // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
         document.getElementById('calculatedKValue').innerText = computedK.toFixed(2);
         
-        document.getElementById('percentGold').value = percentValue;
-
-        document.getElementById('percentResultBox').style.display = 'block';
-    }
-</script>
-
-</body>
-</html>            width: 100%;
-            border-top: 8px solid #d4af37;
-        }
-        .logo-wrapper {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .logo-img {
-            width: 85px;
-            height: 85px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #d4af37;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin: 0 0 5px 0;
-            font-size: 24px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #444;
-            font-weight: 400;
-        }
-        .optional-label {
-            font-size: 12px;
-            color: #888;
-            font-style: italic;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        input[type="number"]:focus {
-            border-color: #d4af37;
-            outline: none;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #d4af37;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #aa8c2c;
-        }
-        .btn-secondary {
-            background-color: #4a5568;
-            font-size: 16px;
-            padding: 10px;
-        }
-        .btn-secondary:hover {
-            background-color: #2d3748;
-        }
-        .result-box {
-            margin-top: 25px;
-            padding: 18px;
-            background-color: #fbf8eb;
-            border-left: 5px solid #d4af37;
-            border-radius: 4px;
-            display: none;
-        }
-        .k-result-box {
-            margin-top: 12px;
-            padding: 12px;
-            background-color: #f0f4f8;
-            border-left: 5px solid #4a5568;
-            border-radius: 4px;
-            display: none;
-        }
-        .result-item {
-            margin: 8px 0;
-            font-size: 16px;
-            color: #444;
-        }
-        .highlight {
-            color: #d4af37;
-            font-weight: 600;
-        }
-        .k-highlight {
-            color: #2b6cb0;
-            font-weight: 600;
-        }
-        .profit-highlight {
-            color: #2e7d32;
-            font-weight: 600;
-        }
-        .total-price-section {
-            font-size: 18px;
-            border-top: 1px dashed #d4af37;
-            padding-top: 10px;
-            margin-top: 12px;
-            display: none;
-        }
-        .profit-section {
-            font-size: 18px;
-            border-top: 1px dashed #2e7d32;
-            padding-top: 10px;
-            margin-top: 12px;
-            display: none;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: #e2e8f0;
-            margin: 25px 0;
-        }
-        .tools-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-
-<div class="live-counter-badge">
-    <span class="pulse-dot"></span>
-    <span>มีผู้ใช้งานเว็บไซต์ตอนนี้อยู่: <span id="online-count" style="color: #2ec771;">1</span> คน</span>
-</div>
-
-<div class="container">
-    <div class="logo-wrapper">
-        <img src="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png" alt="Logo" class="logo-img">
-    </div>
-    <h2>ระบบคำนวณราคาทองคำ</h2>
-    <p class="subtitle">คำนวณราคาท่อกรัม วิเคราะห์ต้นทุนและราคารวม</p>
-    
-    <div class="form-group">
-        <label for="goldBars">1. ราคาซื้อทองแท่งปัจจุบัน (บาท):</label>
-        <input type="number" id="goldBars" placeholder="ตัวอย่าง: 44000" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="percentGold">2. ความบริสุทธิ์ของทอง (%):</label>
-        <input type="number" id="percentGold" placeholder="ตัวอย่าง: 75" step="0.01" required>
-    </div>
-
-    <div class="form-group">
-        <label for="goldWeight">3. น้ำหนักทอง (กรัม) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
-        <input type="number" id="goldWeight" placeholder="ตัวอย่าง: 15.2 (ปล่อยว่างไว้ได้)" step="0.0001">
-    </div>
-
-    <div class="form-group">
-        <label for="myBuyPrice">4. ราคาที่คุณซื้อทองชิ้นนี้มา (บาท) <span class="optional-label">(ไม่จำเป็นต้องระบุได้)</span>:</label>
-        <input type="number" id="myBuyPrice" placeholder="ตัวอย่าง: 25000 (ปล่อยว่างไว้ได้)">
-    </div>
-    
-    <button onclick="calculateGold()">คำนวณราคาทอง</button>
-    
-    <div class="result-box" id="resultBox">
-        <div class="result-item" id="infoText"></div>
-        <div class="result-item" style="margin-top: 12px;">ราคาทองคำต่อกรัมวันนี้: <span class="highlight" id="pricePerGram">0</span> บาท</div>
-        
-        <div class="result-item total-price-section" id="totalPriceSection">
-            ราคารวมของทองน้ำหนัก <span id="viewWeight">0</span> กรัม คือ: <span class="highlight" id="totalPrice">0</span> บาท
-        </div>
-
-        <div class="result-item profit-section" id="profitSection">
-            ทองชิ้นนี้ต้องมีน้ำหนักเกิน: <span class="profit-highlight" id="minWeightForProfit">0</span> กรัม ถึงจะเริ่มได้กำไร
-        </div>
-    </div>
-
-    <hr>
-
-    <div class="tools-title">เครื่องมือแปลงหน่วยทอง (K-Gold Tools)</div>
-
-    <div class="form-group">
-        <label for="goldKValue">5. แปลงค่าทอง (K) เป็นเปอร์เซ็นต์ (%):</label>
-        <input type="number" id="goldKValue" placeholder="ตัวอย่าง: 18 หรือ 22" step="0.1">
-    </div>
-    <button onclick="convertKToPercent()" class="btn-secondary" style="margin-bottom: 20px;">แปลงค่า K เป็นเปอร์เซ็นต์</button>
-
-    <div class="k-result-box" id="kResultBox">
-        <div class="result-item">ทองคำขนาด <span class="k-highlight" id="viewKValue">0</span>K คิดเป็น: <span class="k-highlight" id="calculatedPercent">0</span>%</div>
-    </div>
-
-    <div class="form-group" style="margin-top: 20px;">
-        <label for="goldPercentValue">6. แปลงเปอร์เซ็นต์ (%) เป็นค่าทอง (K):</label>
-        <input type="number" id="goldPercentValue" placeholder="ตัวอย่าง: 75 หรือ 96.5" step="0.01">
-    </div>
-    <button onclick="convertPercentToK()" class="btn-secondary">แปลงเปอร์เซ็นต์เป็นค่า K</button>
-
-    <div class="k-result-box" id="percentResultBox">
-        <div class="result-item">ทองคำบริสุทธิ์ <span class="k-highlight" id="viewPercentValue">0</span>% คิดเป็น: <span class="k-highlight" id="calculatedKValue">0</span>K</div>
-    </div>
-</div>
-
-<script>
-    // ⚠️ เปลี่ยนลิงก์ด้านล่างนี้ให้เป็นลิงก์ Web Service บน Render.com ของคุณนะครับ
-    const BACKEND_URL = "https://your-app.onrender.com"; 
-    
-    // เชื่อมต่อไปยังเซิร์ฟเวอร์หลังบ้านตรงๆ โดยไม่ผูกมัดเงื่อนไขใดๆ 
-    const socket = io(BACKEND_URL);
-
-    // รับยอดนับจำนวนแท็บจากเซิร์ฟเวอร์ แล้วแสดงผลทันที
-    socket.on('userCount', (count) => {
-        document.getElementById('online-count').innerText = count;
-    });
-
-
-    // --- โค้ดระบบคำนวณราคาทองคำเดิมของคุณทั้งหมด ---
-    function calculateGold() {
-        const valueOfGoldbars = parseFloat(document.getElementById('goldBars').value);
-        const percentOfGold = parseFloat(document.getElementById('percentGold').value);
-        const goldWeightInput = document.getElementById('goldWeight').value;
-        const myBuyPriceInput = document.getElementById('myBuyPrice').value;
-        
-        if (isNaN(valueOfGoldbars) || isNaN(percentOfGold)) {
-            alert('กรุณากรอกราคาซื้อทองแท่งและความบริสุทธิ์ให้ครบถ้วนครับ');
-            return;
-        }
-        
-        const pricePerGram = ((valueOfGoldbars - 200) / 15.2) * (percentOfGold / 100);
-        
-        document.getElementById('infoText').innerHTML = `✨ บันทึกข้อมูลเรียบร้อย! ทองคำบริสุทธิ์ <b>${percentOfGold}%</b>`;
-        document.getElementById('pricePerGram').innerText = pricePerGram.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        
-        if (goldWeightInput !== "" && !isNaN(parseFloat(goldWeightInput)) && parseFloat(goldWeightInput) > 0) {
-            const goldWeight = parseFloat(goldWeightInput);
-            const totalPrice = pricePerGram * goldWeight;
-            
-            document.getElementById('viewWeight').innerText = goldWeight;
-            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            document.getElementById('totalPriceSection').style.display = 'block';
-        } else {
-            document.getElementById('totalPriceSection').style.display = 'none';
-        }
-        
-        if (myBuyPriceInput !== "" && !isNaN(parseFloat(myBuyPriceInput)) && parseFloat(myBuyPriceInput) > 0) {
-            const myBuyPrice = parseFloat(myBuyPriceInput);
-            const minWeight = myBuyPrice / pricePerGram;
-            
-            document.getElementById('minWeightForProfit').innerText = minWeight.toFixed(4);
-            document.getElementById('profitSection').style.display = 'block';
-        } else {
-            document.getElementById('profitSection').style.display = 'none';
-        }
-            
-        document.getElementById('resultBox').style.display = 'block';
-    }
-
-    function convertKToPercent() {
-        const kValueInput = document.getElementById('goldKValue').value;
-        const kValue = parseFloat(kValueInput);
-
-        if (isNaN(kValue) || kValue <= 0 || kValue > 24) {
-            alert('กรุณากรอกจำนวน K ให้ถูกต้อง (ตั้งแต่ 1 ถึง 24 K) ครับ');
-            return;
-        }
-
-        const computedPercent = (kValue / 24) * 100;
-
-        document.getElementById('viewKValue').innerText = kValue;
-        document.getElementById('calculatedPercent').innerText = computedPercent.toFixed(2);
-        
-        document.getElementById('percentGold').value = computedPercent.toFixed(2);
-        
-        document.getElementById('kResultBox').style.display = 'block';
-    }
-
-    function convertPercentToK() {
-        const percentInput = document.getElementById('goldPercentValue').value;
-        const percentValue = parseFloat(percentInput);
-
-        if (isNaN(percentValue) || percentValue <= 0 || percentValue > 100) {
-            alert('กรุณากรอกเปอร์เซ็นต์ให้ถูกต้อง (ตั้งแต่ 1 ถึง 100%) ครับ');
-            return;
-        }
-
-        const computedK = (percentValue / 100) * 24;
-
-        document.getElementById('viewPercentValue').innerText = percentValue;
-        document.getElementById('calculatedKValue').innerText = computedK.toFixed(2);
-        
+        // ช่วยผู้ใช้พิมพ์อัตโนมัติ: ส่งค่าเปอร์เซ็นต์นี้ไปที่ช่องเลข 2 ให้ทันทีด้วยเพื่อความสะดวกในการคำนวณราคาต่อ
         document.getElementById('percentGold').value = percentValue;
 
         document.getElementById('percentResultBox').style.display = 'block';
