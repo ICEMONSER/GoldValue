@@ -14,9 +14,10 @@
     <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png">
    
-    
     <meta name="apple-mobile-web-app-title" content="คำนวณราคาทอง">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     
     <style>
         * {
@@ -31,7 +32,61 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative; /* เพิ่มเพื่อให้ลูกที่ทำ absolute อิงกับ body */
         }
+
+        /* 2. สไตล์สำหรับกล่องนับยอดออนไลน์มุมขวาบน (เพิ่มเข้ามา) */
+        .live-counter-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ec771;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(46, 199, 113, 0.7);
+            animation: pulse 1.6s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 199, 113, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(46, 199, 113, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 199, 113, 0);
+            }
+        }
+
+        /* Responsive สำหรับมือถือ ให้ดันตัวนับลงมาไม่ให้ทับเนื้อหา */
+        @media (max-width: 600px) {
+            body {
+                padding-top: 70px;
+            }
+            .live-counter-badge {
+                top: 15px;
+                right: 15px;
+            }
+        }
+
         .container {
             background-color: #ffffff;
             padding: 30px;
@@ -179,6 +234,11 @@
 </head>
 <body>
 
+<div class="live-counter-badge">
+    <span class="pulse-dot"></span>
+    <span>ยอดผู้ใช้งานของเว็บไซต์อยู่: <span id="online-count" style="color: #2ec771;">1</span> คน</span>
+</div>
+
 <div class="container">
     <div class="logo-wrapper">
         <img src="https://i.ibb.co/dH9BrtY/Gemini-Generated-Image-mr0ej3mr0ej3mr0e.png" alt="Logo" class="logo-img">
@@ -247,6 +307,28 @@
 </div>
 
 <script>
+    // 4. สคริปต์เชื่อมต่อ Real-time Counter (เพิ่มเข้ามา)
+    // ⚠️ อย่าลืมเปลี่ยนลิงก์ข้างล่างนี้ให้เป็นลิงก์ Web Service ที่คุณสร้างบน Render.com นะครับ
+    const BACKEND_URL = "https://your-app.onrender.com"; 
+    
+    // สร้าง Token สุ่มเก็บไว้ในเครื่องผู้ใช้เพื่อล็อก 1 เครื่อง = 1 คน (แม้จะเปิดหลายแท็บ)
+    if (!localStorage.getItem('user_fingerprint')) {
+        localStorage.setItem('user_fingerprint', 'user_' + Math.random().toString(36).substr(2, 9));
+    }
+    const userFingerprint = localStorage.getItem('user_fingerprint');
+
+    // เชื่อมต่อไปยังเซิร์ฟเวอร์หลังบ้าน พร้อมส่ง fingerprint ไปยืนยันตัวตน
+    const socket = io(BACKEND_URL, {
+        auth: { token: userFingerprint }
+    });
+
+    // รับยอดอัปเดตจากเซิร์ฟเวอร์แล้วแสดงผลในแท็ก #online-count
+    socket.on('userCount', (count) => {
+        document.getElementById('online-count').innerText = count;
+    });
+
+
+    // --- โค้ดคำนวณเดิมของคุณทั้งหมด ---
     function calculateGold() {
         const valueOfGoldbars = parseFloat(document.getElementById('goldBars').value);
         const percentOfGold = parseFloat(document.getElementById('percentGold').value);
@@ -287,7 +369,6 @@
         document.getElementById('resultBox').style.display = 'block';
     }
 
-    // ฟังก์ชันข้อ 5: แปลงค่าทอง K เป็นเปอร์เซ็นต์
     function convertKToPercent() {
         const kValueInput = document.getElementById('goldKValue').value;
         const kValue = parseFloat(kValueInput);
@@ -302,13 +383,11 @@
         document.getElementById('viewKValue').innerText = kValue;
         document.getElementById('calculatedPercent').innerText = computedPercent.toFixed(2);
         
-        // ช่วยผู้ใช้พิมพ์อัตโนมัติ: ส่งค่าที่คำนวณได้ไปที่ช่องเลข 2
         document.getElementById('percentGold').value = computedPercent.toFixed(2);
         
         document.getElementById('kResultBox').style.display = 'block';
     }
 
-    // ฟังก์ชันข้อ 6: แปลงเปอร์เซ็นต์ เป็นค่าทอง K
     function convertPercentToK() {
         const percentInput = document.getElementById('goldPercentValue').value;
         const percentValue = parseFloat(percentInput);
@@ -318,14 +397,11 @@
             return;
         }
 
-        // ใช้สูตร (เปอร์เซ็นต์ที่สนใจ / 100) * 24
         const computedK = (percentValue / 100) * 24;
 
         document.getElementById('viewPercentValue').innerText = percentValue;
-        // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
         document.getElementById('calculatedKValue').innerText = computedK.toFixed(2);
         
-        // ช่วยผู้ใช้พิมพ์อัตโนมัติ: ส่งค่าเปอร์เซ็นต์นี้ไปที่ช่องเลข 2 ให้ทันทีด้วยเพื่อความสะดวกในการคำนวณราคาต่อ
         document.getElementById('percentGold').value = percentValue;
 
         document.getElementById('percentResultBox').style.display = 'block';
