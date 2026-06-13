@@ -2,28 +2,20 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
-  cors: { origin: "*" } // ยอมรับการเชื่อมต่อจาก GitHub Pages ทุกหน้าต่าง
+  cors: { origin: "*" } // อนุญาตให้ GitHub Pages ทุกหน้าต่างเชื่อมต่อเข้ามาได้
 });
 
-// ตัวแปรสำหรับนับจำนวนแท็บที่เปิดอยู่ ณ ปัจจุบัน
 let onlineTabsCount = 0;
 
 io.on('connection', (socket) => {
-    // เมื่อมีคนเปิดแท็บใหม่ (เกิดการต่อ Socket ใหม่) ให้บวกเพิ่ม 1
+    // เพิ่มจำนวนเมื่อมีแท็บเชื่อมต่อเข้ามาใหม่
     onlineTabsCount++;
-    
-    // ส่งยอดรวมล่าสุดไปบอกทุกแท็บที่เปิดอยู่
     io.emit('userCount', onlineTabsCount);
 
-    // เมื่อมีคนปิดแท็บ หรือรีเฟรชหน้าเว็บ (เกิดการตัดการเชื่อมต่อ)
+    // ลดจำนวนเมื่อแท็บนั้นถูกปิด หรือกด Refresh
     socket.on('disconnect', () => {
-        // ให้ลบยอดออก 1
         onlineTabsCount--;
-        
-        // ป้องกันไม่ให้ตัวเลขติดลบ (เผื่อกรณีฉุกเฉิน)
         if (onlineTabsCount < 0) onlineTabsCount = 0;
-
-        // ส่งยอดที่อัปเดตใหม่ไปบอกทุกแท็บที่เหลืออยู่
         io.emit('userCount', onlineTabsCount);
     });
 });
